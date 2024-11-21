@@ -1,3 +1,5 @@
+import java.util.HashSet;
+
 float xoff = 0;
 float yoff = 10000;
 
@@ -16,20 +18,16 @@ void handle_movement(Particle particle, Maze map) {
       PVector forward = PVector.fromAngle(particle.heading);
       forward.setMag(speed);
       forward.add(particle.pos);
-
       forward.div(blockSize);
       int newX = (int) forward.x;
       int newY = (int) forward.y;
       if(map.grid[newX][newY] != wallChar) {
           particle.move(speed);
       }
-      
-      
     } else if (keyCode == DOWN) {
       PVector forward = PVector.fromAngle(particle.heading);
       forward.setMag(0 - speed);
       forward.add(particle.pos);
-
       forward.div(blockSize);
       int newX = (int) forward.x;
       int newY = (int) forward.y;
@@ -86,6 +84,34 @@ class Particle {
     PVector forward = PVector.fromAngle(heading);
     forward.setMag(amount);
     pos.add(forward);
+  }
+  
+  HashSet<Boundary> get_visible_boundaries(ArrayList<Boundary> walls) {
+    HashSet<Boundary> visible_boundaries = new HashSet<Boundary>();
+   
+    int totalRays = 360;
+    float angleStep = fov / totalRays;
+    
+    for (float angle = heading - fov / 2; angle < heading + fov / 2; angle += angleStep) {
+      PVector rayDir = PVector.fromAngle(angle);
+      float minDist = Float.MAX_VALUE;
+      Boundary current_min_boundary = null;
+      for (Boundary wall : walls) {
+        PVector pt = cast(rayDir, wall);
+        if (pt != null) {
+          float d = PVector.dist(pos, pt);
+          if (d < minDist) {
+            current_min_boundary = wall;
+            minDist = d;
+          }
+        }
+      }
+      if(current_min_boundary != null) {
+        visible_boundaries.add(current_min_boundary);
+      }
+    }
+   
+   return visible_boundaries;
   }
 
   ArrayList<Float> look(ArrayList<Boundary> walls) {

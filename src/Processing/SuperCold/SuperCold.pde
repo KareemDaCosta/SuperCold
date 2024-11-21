@@ -21,19 +21,27 @@ void setup() {
 
 void draw() {
   camera_draw(player, walls, map);
-  draw_minimap(walls, map, player);
+  draw_minimap(walls, map, player, true);
 }
 
 
-void draw_minimap(ArrayList<Boundary> walls, Maze map, Particle player) {
+void draw_minimap(ArrayList<Boundary> walls, Maze map, Particle player, boolean blind) {
     int shrink = blockSize/minimapBoundarySize;
     int offsetX = width - map.gridDimensionX * minimapBoundarySize;
     int mapHeight = map.gridDimensionY * minimapBoundarySize;
     fill(0);
     rectMode(CORNERS);
     rect(offsetX, 0, width, mapHeight);
-    for (Boundary wall : walls) {
-      wall.show(offsetX, shrink);
+    
+    if(!blind) {
+      for (Boundary wall : walls) {
+        wall.show(offsetX, shrink);
+      }
+    }
+    else {
+       for(Boundary wall: player.get_visible_boundaries(walls)) {
+         wall.show(offsetX, shrink);
+       }
     }
     
     float playerX = offsetX + player.pos.x/shrink;
