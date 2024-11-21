@@ -1,23 +1,50 @@
 float xoff = 0;
 float yoff = 10000;
 
-int fov = 90;
+float player_fov = 90;
 
-void camera_draw(Particle particle, ArrayList<Boundary> walls) {
-  background(0);
+int speed = 2;
 
-  // Handle key presses for movement and rotation
+// Handle key presses for movement and rotation
+void handle_movement(Particle particle, Maze map) {
   if (keyPressed) {
     if (keyCode == LEFT) {
       particle.rotate(-0.03);
     } else if (keyCode == RIGHT) {
       particle.rotate(0.03);
     } else if (keyCode == UP) {
-      particle.move(2);
+      PVector forward = PVector.fromAngle(particle.heading);
+      forward.setMag(speed);
+      forward.add(particle.pos);
+
+      forward.div(20);
+      int newX = (int) forward.x;
+      int newY = (int) forward.y;
+      if(map.grid[newX][newY] != wallChar) {
+          particle.move(speed);
+      }
+      
+      
     } else if (keyCode == DOWN) {
-      particle.move(-2);
+      PVector forward = PVector.fromAngle(particle.heading);
+      forward.setMag(0 - speed);
+      forward.add(particle.pos);
+
+      forward.div(20);
+      int newX = (int) forward.x;
+      int newY = (int) forward.y;
+      if(map.grid[newX][newY] != wallChar) {
+          particle.move(speed);
+      }
     }
   }
+}
+
+void camera_draw(Particle particle, ArrayList<Boundary> walls, Maze map) {
+  background(0);
+
+  handle_movement(particle, map);
+  
   particle.show();
 
   // Render 3D-like scene on the right half of the canvas
@@ -25,7 +52,6 @@ void camera_draw(Particle particle, ArrayList<Boundary> walls) {
   float w = (float) sceneW / scene.size();
   
   pushMatrix();
-  translate(sceneW, 0); // Move to the right half of the canvas
   for (int i = 0; i < scene.size(); i++) {
     noStroke();
     float sq = scene.get(i) * scene.get(i);
@@ -45,9 +71,9 @@ class Particle {
   float fov;
 
   Particle() {
-    pos = new PVector(sceneW / 2, sceneH / 2);
+    pos = new PVector(blockSize + 5, blockSize + 5);
     heading = 0;
-    fov = radians(60);
+    fov = radians(player_fov);
   }
 
   void updateFOV(int angle) {

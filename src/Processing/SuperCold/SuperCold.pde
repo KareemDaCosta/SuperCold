@@ -5,22 +5,20 @@ ArrayList<Boundary> walls;
 final int mazeW = 5;
 final int mazeH = 5;
 final int blockSize = 20;
+final char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
 
-int sceneW;
-int sceneH;
+int sceneW = 800;
+int sceneH = 800;
 
 void setup() {
   map = new Maze(mazeW, mazeH);
-  System.out.println(map);
-  sceneW = map.gridDimensionX*blockSize;
-  sceneH = map.gridDimensionY*blockSize;
-  windowResize(sceneW * 2, sceneH);
+  windowResize(sceneW, sceneH);
   player = new Particle();
   walls = new ArrayList<Boundary>();
   setup_boundaries(map, walls);
 }
 
 void draw() {
-  camera_draw(player, walls);
   draw_boundaries(walls);
+  camera_draw(player, walls, map);
 }

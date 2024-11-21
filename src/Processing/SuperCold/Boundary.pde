@@ -18,10 +18,10 @@ void setup_boundaries(Maze map, ArrayList<Boundary> walls) {
     for (int y = 0; y < map.gridDimensionY; y++) {
       for (int x = 0; x <  map.gridDimensionX; x++) {
         if (map.grid[x][y] == 'X') {
-               walls.add(new Boundary(x * blockSize, y * blockSize, x * blockSize + blockSize, y * blockSize));
-               walls.add(new Boundary(x * blockSize, y * blockSize, x * blockSize, y * blockSize + blockSize));
-               walls.add(new Boundary(x * blockSize + blockSize, y * blockSize + blockSize, x * blockSize + blockSize, y * blockSize));
-               walls.add(new Boundary(x * blockSize + blockSize, y * blockSize + blockSize, x * blockSize, y * blockSize + blockSize));
+             walls.add(new Boundary(x * blockSize, y * blockSize, x * blockSize + blockSize, y * blockSize));
+             walls.add(new Boundary(x * blockSize, y * blockSize, x * blockSize, y * blockSize + blockSize));
+             walls.add(new Boundary(x * blockSize + blockSize, y * blockSize + blockSize, x * blockSize + blockSize, y * blockSize));
+             walls.add(new Boundary(x * blockSize + blockSize, y * blockSize + blockSize, x * blockSize, y * blockSize + blockSize));
         }
       }
     }

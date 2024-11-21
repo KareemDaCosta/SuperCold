@@ -6,7 +6,7 @@ import java.util.Random;
 class Maze {
   int dimensionX, dimensionY; // dimension of maze
   int gridDimensionX, gridDimensionY; // dimension of output grid
-  private char[][] grid; // output grid
+  char[][] grid; // output grid
   Cell[][] cells; // 2d array of Cells
   Random random = new Random(); // The random object
 
@@ -24,6 +24,7 @@ class Maze {
     grid = new char[gridDimensionX][gridDimensionY];
     init();
     generateMaze();
+    updateGrid();
   }
 
   private void init() {
@@ -233,7 +234,6 @@ class Maze {
 
   // draw the maze
   public void updateGrid() {
-    char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
     // fill background
     for (int x = 0; x < gridDimensionX; x ++) {
       for (int y = 0; y < gridDimensionY; y ++) {
