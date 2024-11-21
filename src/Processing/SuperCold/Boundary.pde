@@ -8,9 +8,9 @@ class Boundary {
     this.y2 = y2;
   }
 
-  void show() {
+  void show(int offsetX, int shrink) {
     stroke(255);
-    line(x1, y1, x2, y2);
+    line(x1/shrink + offsetX, y1/shrink, x2/shrink + offsetX, y2/shrink);
   }
 }
 
@@ -25,10 +25,4 @@ void setup_boundaries(Maze map, ArrayList<Boundary> walls) {
         }
       }
     }
-}
-
-void draw_boundaries(ArrayList<Boundary> walls) {
-    for (Boundary wall : walls) {
-      wall.show();
-    } 
 }

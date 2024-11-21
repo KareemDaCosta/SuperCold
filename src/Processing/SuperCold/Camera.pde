@@ -1,7 +1,7 @@
 float xoff = 0;
 float yoff = 10000;
 
-float player_fov = 90;
+float player_fov = 60;
 
 int speed = 2;
 
