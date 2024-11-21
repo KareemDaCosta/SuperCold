@@ -290,22 +290,6 @@ class Maze {
       }
     }
   }
-
-  // draws the map
-  public void draw_map() {
-    updateGrid();
-    
-    background(0);
-    noStroke();
-    fill(255, 255, 255);
-    for (int y = 0; y < map.gridDimensionY; y++) {
-      for (int x = 0; x <  map.gridDimensionX; x++) {
-        if (grid[x][y] == 'X') {
-          rect(x * 40, y * 40, 40, 40);
-        }
-      }
-    }
-  }
   // forms a meaningful representation
   @Override
     public String toString() {
