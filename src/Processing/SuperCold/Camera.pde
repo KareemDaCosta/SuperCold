@@ -1,9 +1,9 @@
 float xoff = 0;
 float yoff = 10000;
 
-float player_fov = 60;
+float player_fov = 50;
 
-int speed = 2;
+int speed = 6;
 
 // Handle key presses for movement and rotation
 void handle_movement(Particle particle, Maze map) {
@@ -17,7 +17,7 @@ void handle_movement(Particle particle, Maze map) {
       forward.setMag(speed);
       forward.add(particle.pos);
 
-      forward.div(20);
+      forward.div(blockSize);
       int newX = (int) forward.x;
       int newY = (int) forward.y;
       if(map.grid[newX][newY] != wallChar) {
@@ -30,11 +30,11 @@ void handle_movement(Particle particle, Maze map) {
       forward.setMag(0 - speed);
       forward.add(particle.pos);
 
-      forward.div(20);
+      forward.div(blockSize);
       int newX = (int) forward.x;
       int newY = (int) forward.y;
       if(map.grid[newX][newY] != wallChar) {
-          particle.move(speed);
+          particle.move(0-speed);
       }
     }
   }
@@ -45,8 +45,6 @@ void camera_draw(Particle particle, ArrayList<Boundary> walls, Maze map) {
 
   handle_movement(particle, map);
   
-  particle.show();
-
   // Render 3D-like scene on the right half of the canvas
   ArrayList<Float> scene = particle.look(walls);
   float w = (float) sceneW / scene.size();

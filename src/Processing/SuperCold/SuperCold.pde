@@ -4,7 +4,7 @@ ArrayList<Boundary> walls;
 
 final int mazeW = 5;
 final int mazeH = 5;
-final int blockSize = 20;
+final int blockSize = 80;
 final int minimapBoundarySize = 10;
 final char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
 
@@ -36,8 +36,8 @@ void draw_minimap(ArrayList<Boundary> walls, Maze map, Particle player) {
       wall.show(offsetX, shrink);
     }
     
-    int playerX = offsetX + (int) player.pos.x/shrink;
-    int playerY = (int) player.pos.y/shrink;
+    float playerX = offsetX + player.pos.x/shrink;
+    float playerY = player.pos.y/shrink;
     fill(255);
     ellipse(playerX, playerY, 5, 5);
 }
