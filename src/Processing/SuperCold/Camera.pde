@@ -7,7 +7,7 @@ class Camera {
   float cameraRightX, cameraRightY;
   float cameraMoveSpeed = 2;
   float cameraTurnVelocity;
-  float cameraTurnSpeed = 5;
+  float cameraTurnSpeed = 10;
   float cameraFov = 90;
   float cameraNearPlane = 1;
   float cameraFarPlane = 1000;
@@ -159,17 +159,23 @@ void camera_draw(Camera player) {
   System.out.println("newCameraY: " + newY);
   
   
-  if(map.grid[(int)(newX + playerWidth)][(int) (oldY + playerWidth)] != wallChar &&  map.grid[(int)(newX - playerWidth)][(int) (oldY - playerWidth)] != wallChar) {
+  if(map.grid[(int)(newX + playerWidth)][(int) (oldY + playerWidth)] != wallChar && map.grid[(int)(newX + playerWidth)][(int) (oldY - playerWidth)] != wallChar && map.grid[(int)(newX - playerWidth)][(int) (oldY + playerWidth)] != wallChar && map.grid[(int)(newX - playerWidth)][(int) (oldY - playerWidth)] != wallChar) {
       player.cameraX += player.cameraVelocityX;
+      if(map.grid[(int)(newX + playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(newX + playerWidth)][(int) (newY - playerWidth)] != wallChar && map.grid[(int)(newX - playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(newX - playerWidth)][(int) (newY - playerWidth)] != wallChar) {
+        player.cameraY += player.cameraVelocityY;
+      }
+      else {
+         player.cameraVelocityY = 0; 
+      }
   }
   else {
      player.cameraVelocityX = 0; 
-  }
-  if(map.grid[(int)(oldX + playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(oldX - playerWidth)][(int) (newY - playerWidth)] != wallChar) {
+     if(map.grid[(int)(oldX + playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(oldX + playerWidth)][(int) (newY - playerWidth)] != wallChar && map.grid[(int)(oldX - playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(oldX - playerWidth)][(int) (newY - playerWidth)] != wallChar) {
       player.cameraY += player.cameraVelocityY;
-  }
-  else {
-     player.cameraVelocityY = 0; 
+    }
+    else {
+       player.cameraVelocityY = 0; 
+    }
   }
   
   player.cameraTurnVelocity = player.cameraLerp * velocityZ + (1 - player.cameraLerp) * player.cameraTurnVelocity;

@@ -7,7 +7,7 @@ final int mazeH = 5;
 final int blockSize = 10;
 final int minimapBoundarySize = 10;
 final char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
-float playerWidth = 0.28;
+float playerWidth = 0.2;
 
 int sceneW = 1280;
 int sceneH = 720;
