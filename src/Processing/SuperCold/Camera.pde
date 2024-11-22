@@ -155,9 +155,6 @@ void camera_draw(Camera player) {
   float newX = newCameraX / blockSize;
   float newY = newCameraY / blockSize;
   
-  System.out.println("newCameraX: " + newX);
-  System.out.println("newCameraY: " + newY);
-  
   
   if(map.grid[(int)(newX + playerWidth)][(int) (oldY + playerWidth)] != wallChar && map.grid[(int)(newX + playerWidth)][(int) (oldY - playerWidth)] != wallChar && map.grid[(int)(newX - playerWidth)][(int) (oldY + playerWidth)] != wallChar && map.grid[(int)(newX - playerWidth)][(int) (oldY - playerWidth)] != wallChar) {
       player.cameraX += player.cameraVelocityX;
