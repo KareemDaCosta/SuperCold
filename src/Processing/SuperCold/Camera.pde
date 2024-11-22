@@ -15,8 +15,8 @@ class Camera {
   float cameraAngle;
   float cameraLerp = 0.5;
   Camera() {
-    cameraX = 11;
-    cameraY = 11;
+    cameraX = 15;
+    cameraY = 15;
   }
 }
 
@@ -150,6 +150,7 @@ void camera_draw(Camera player) {
   float newCameraY = player.cameraY + player.cameraVelocityY;
 
 
+  float oldX = player.cameraX / blockSize;
   float oldY = player.cameraY / blockSize;
   float newX = newCameraX / blockSize;
   float newY = newCameraY / blockSize;
@@ -161,8 +162,14 @@ void camera_draw(Camera player) {
   if(map.grid[(int)(newX + playerWidth)][(int) (oldY + playerWidth)] != wallChar &&  map.grid[(int)(newX - playerWidth)][(int) (oldY - playerWidth)] != wallChar) {
       player.cameraX += player.cameraVelocityX;
   }
-  if(map.grid[(int)(newX + playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(newX - playerWidth)][(int) (newY - playerWidth)] != wallChar) {
+  else {
+     player.cameraVelocityX = 0; 
+  }
+  if(map.grid[(int)(oldX + playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(oldX - playerWidth)][(int) (newY - playerWidth)] != wallChar) {
       player.cameraY += player.cameraVelocityY;
+  }
+  else {
+     player.cameraVelocityY = 0; 
   }
   
   player.cameraTurnVelocity = player.cameraLerp * velocityZ + (1 - player.cameraLerp) * player.cameraTurnVelocity;
