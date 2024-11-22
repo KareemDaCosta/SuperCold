@@ -7,6 +7,7 @@ final int mazeH = 5;
 final int blockSize = 10;
 final int minimapBoundarySize = 10;
 final char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
+float playerWidth = 0.2;
 
 int sceneW = 1280;
 int sceneH = 720;
@@ -56,5 +57,5 @@ void draw_minimap(ArrayList<Wall> walls, Maze map, boolean blind) {
     fill(255);
     ellipse(playerX, playerY, 5, 5);
     stroke(255);
-    line(playerX, playerY, playerX + player.cameraForwardX * 10, playerY - player.cameraForwardY * 10);
+    line(playerX, playerY, playerX + player.cameraForwardX * 10, playerY + player.cameraForwardY * 10);
 }

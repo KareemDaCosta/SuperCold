@@ -15,8 +15,8 @@ class Camera {
   float cameraAngle;
   float cameraLerp = 0.5;
   Camera() {
-    cameraX = 10;
-    cameraY = 10;
+    cameraX = 11;
+    cameraY = 11;
   }
 }
 
@@ -142,10 +142,29 @@ void camera_draw(Camera player) {
   if (qPressed) velocityZ += player.cameraTurnSpeed;
   if (ePressed) velocityZ -= player.cameraTurnSpeed;
   // Update Camera
+   
   player.cameraVelocityX = player.cameraLerp * velocityX + (1 - player.cameraLerp) * player.cameraVelocityX;
   player.cameraVelocityY = player.cameraLerp * velocityY + (1 - player.cameraLerp) * player.cameraVelocityY;
-  player.cameraX += player.cameraVelocityX;
-  player.cameraY += player.cameraVelocityY;
+  
+  float newCameraX = player.cameraX + player.cameraVelocityX;
+  float newCameraY = player.cameraY + player.cameraVelocityY;
+
+
+  float oldY = player.cameraY / blockSize;
+  float newX = newCameraX / blockSize;
+  float newY = newCameraY / blockSize;
+  
+  System.out.println("newCameraX: " + newX);
+  System.out.println("newCameraY: " + newY);
+  
+  
+  if(map.grid[(int)(newX + playerWidth)][(int) (oldY + playerWidth)] != wallChar &&  map.grid[(int)(newX - playerWidth)][(int) (oldY - playerWidth)] != wallChar) {
+      player.cameraX += player.cameraVelocityX;
+  }
+  if(map.grid[(int)(newX + playerWidth)][(int) (newY + playerWidth)] != wallChar &&  map.grid[(int)(newX - playerWidth)][(int) (newY - playerWidth)] != wallChar) {
+      player.cameraY += player.cameraVelocityY;
+  }
+  
   player.cameraTurnVelocity = player.cameraLerp * velocityZ + (1 - player.cameraLerp) * player.cameraTurnVelocity;
   player.cameraAngle += player.cameraTurnVelocity;
 }
