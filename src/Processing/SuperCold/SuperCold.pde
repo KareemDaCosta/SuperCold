@@ -1,32 +1,38 @@
 Maze map;
-Particle player;
-ArrayList<Boundary> walls;
+Camera player;
+ArrayList<Wall> walls;
 
 final int mazeW = 5;
 final int mazeH = 5;
-final int blockSize = 80;
+final int blockSize = 10;
 final int minimapBoundarySize = 10;
 final char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
 
-int sceneW = 800;
-int sceneH = 800;
+int sceneW = 1280;
+int sceneH = 720;
 
 void setup() {
+  size(1280, 720);
+  frameRate(30);
   map = new Maze(mazeW, mazeH);
-  windowResize(sceneW, sceneH);
-  player = new Particle();
-  walls = new ArrayList<Boundary>();
-  setup_boundaries(map, walls);
+  walls = new ArrayList<Wall>();
+  setup_walls(map, walls);
+  player = new Camera();
+  buffer = createImage(bufferWidth, bufferHeight, RGB);
+  floorTexture = loadImage("floor.jpg");
+  wallTexture = loadImage("wall.jpg");
+  ceilingTexture = loadImage("ceiling.jpg");
 }
 
 void draw() {
-  camera_draw(player, walls, map);
-  draw_minimap(walls, map, player, true);
+  camera_draw(player);
+  draw_minimap(walls, map, false);
 }
 
 
-void draw_minimap(ArrayList<Boundary> walls, Maze map, Particle player, boolean blind) {
-    int shrink = blockSize/minimapBoundarySize;
+void draw_minimap(ArrayList<Wall> walls, Maze map, boolean blind) {
+    
+    float shrink = blockSize/minimapBoundarySize;
     int offsetX = width - map.gridDimensionX * minimapBoundarySize;
     int mapHeight = map.gridDimensionY * minimapBoundarySize;
     fill(0);
@@ -34,18 +40,21 @@ void draw_minimap(ArrayList<Boundary> walls, Maze map, Particle player, boolean 
     rect(offsetX, 0, width, mapHeight);
     
     if(!blind) {
-      for (Boundary wall : walls) {
+      for (Wall wall : walls) {
         wall.show(offsetX, shrink);
       }
     }
-    else {
-       for(Boundary wall: player.get_visible_boundaries(walls)) {
+    
+    /*else {
+       for(Wall wall: player.get_visible_boundaries(walls)) {
          wall.show(offsetX, shrink);
        }
-    }
+    }*/
     
-    float playerX = offsetX + player.pos.x/shrink;
-    float playerY = player.pos.y/shrink;
+    float playerX = offsetX + player.cameraX/shrink;
+    float playerY = player.cameraY/shrink;
     fill(255);
     ellipse(playerX, playerY, 5, 5);
+    stroke(255);
+    line(playerX, playerY, playerX + player.cameraForwardX * 10, playerY - player.cameraForwardY * 10);
 }
