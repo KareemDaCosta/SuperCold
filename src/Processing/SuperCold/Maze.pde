@@ -289,6 +289,36 @@ class Maze {
         }
       }
     }
+    for(int y = 1; y < gridDimensionY - 1; y++) {
+      int consecutive_walls = 0;
+      for(int x = 1; x < gridDimensionX - 1; x++) {
+        if(grid[x][y] == wallChar) {
+          consecutive_walls += 1;
+          if(consecutive_walls >= (int)random(4, 8) && grid[x+1][y] == wallChar && grid[x][y+1] == cellChar) {
+             grid[x][y] = cellChar;
+             consecutive_walls = 0;
+          }
+        }
+        else {
+          consecutive_walls = 0; 
+        }
+      }
+    }
+    for(int x = 1; x < gridDimensionX - 1; x++) {
+      int consecutive_walls = 0;
+      for(int y = 1; y < gridDimensionY - 1; y++) {
+        if(grid[x][y] == wallChar) {
+          consecutive_walls += 1;
+          if(consecutive_walls >= (int)random(4, 7) && grid[x+1][y] == cellChar && grid[x][y+1] == wallChar) {
+             grid[x][y] = cellChar;
+             consecutive_walls = 0;
+          }
+        }
+        else {
+           consecutive_walls = 0; 
+        }
+      }
+    }
   }
   // forms a meaningful representation
   @Override
