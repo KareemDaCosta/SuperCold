@@ -1,5 +1,6 @@
 Maze map;
 Camera player;
+Enemy enemy;
 ArrayList<Wall> walls;
 
 final int mazeW = 5;
@@ -19,6 +20,7 @@ void setup() {
   walls = new ArrayList<Wall>();
   setup_walls(map, walls);
   player = new Camera();
+  enemy = new Enemy(15, 25);
   buffer = createImage(bufferWidth, bufferHeight, RGB);
   floorTexture = loadImage("floor.jpg");
   wallTexture = loadImage("wall.jpg");
