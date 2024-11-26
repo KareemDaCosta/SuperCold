@@ -71,7 +71,7 @@ void camera_draw(Camera player, Enemy enemy) {
     float wallOffset = 0.25 - 0.5 * (wallStart + wallStop) / wallScreenHeight;
     
     float enemyDepth = directionX * result.enemyDistance * player.cameraForwardX + directionY * result.enemyDistance * player.cameraForwardY;
-    float enemyScreenHeight = 2 * enemy.enemyWidth * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
+    float enemyScreenHeight = enemy.enemyHeight * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
     
     float enemyWallScreenHeight = wallHeight * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
     int enemyStart = int(clamp(0.5 * bufferHeight - 0.25 * enemyScreenHeight, 0, 0.5 * bufferHeight));
@@ -137,7 +137,7 @@ void camera_draw(Camera player, Enemy enemy) {
         float distance = sqrt(y * y + result.enemyDistance * result.enemyDistance);
         color albedo = enemy.texture.get(int(clamp(result.enemyU, 0, 1) * (enemy.texture.width - 1)), int(clamp(v, 0, 1) * (enemy.texture.height - 1)));
         float shade = clamp(1 - (distance - player.cameraNearPlane) / (player.cameraFogDistance - player.cameraNearPlane), 0, 1);
-        if((albedo & 0x00FFFFFF) != 0) {
+        if((albedo & 0x00FFFFFF) != 0 && (albedo | 0x00000000) != 0x00FFFFFF) {
           buffer.pixels[i + (int)(clamp((j + (enemyWallScreenHeight - enemyScreenHeight)/2), 0, bufferHeight - 1)) * bufferWidth] = multiplyColor(albedo, shade);
         }
       }
