@@ -4,24 +4,23 @@ class Enemy {
   float cameraAngle;
   int firingCountdown;
   boolean firing;
-  boolean justFired;
   char movementLetter;
   int movementTimer;
   int dyingTimer;
   char dyingStage;
   float enemyWidth;
-  float enemyHeight = 8;
+  float enemyHeight;
   PImage texture;
 
   Enemy(int startingX, int startingY) {
     x = startingX;
     y = startingY;
     firing = false;
-    justFired = false;
     cameraAngle = 3 * QUARTER_PI;
     firingCountdown = 0;
     movementLetter = 'A';
     movementTimer = 20;
+    enemyHeight = 8;
     dyingTimer = 0;
     dyingStage = 0;
     texture = loadImage("./Sprites/B15BA1.png");
@@ -43,11 +42,16 @@ class Enemy {
      firingCountdown = 15;
   }
   
+  void triggerDeath() {
+     dyingTimer = 20;
+     dyingStage = 1;
+  }
+  
   void updateVariables() {
    if(movementTimer > 0) {
       movementTimer--;
       if(movementTimer == 0) {
-         movementTimer = 20;
+         movementTimer = 5;
          if(movementLetter == 'A') {
             movementLetter = 'B'; 
          }
@@ -65,14 +69,7 @@ class Enemy {
    if(firingCountdown > 0) {
       firingCountdown--; 
       if(firingCountdown == 0) {
-         if(firing) {
-           firingCountdown = 20;
-           firing = false;
-           justFired = true;
-         }
-         else {
-            justFired = false;
-         }
+         firing = false;
       }
    }
    if(dyingTimer > 0) {
@@ -82,6 +79,9 @@ class Enemy {
          dyingStage++;
          if(dyingStage == 6) {
             //Trigger new game 
+            enemyHeight = 8;
+            dyingStage = 0;
+            dyingTimer = 0;
          }
       }
     }
@@ -133,21 +133,37 @@ class Enemy {
   void updateTexture(Camera player) {
     String image = "./Sprites/B15B";
     if(dyingStage > 0) {
-     image +=  'H';
-     image += dyingStage;
+      image += 'H';
+      image += Integer.toString(dyingStage);
+      image += ".png";
+      enemyWidth = 5.5;
+      if(dyingStage == 3) {
+         enemyWidth += 1; 
+      }
+      if(dyingStage == 4) {
+         enemyWidth += 2;
+      }
+      if(dyingStage == 5) {
+         enemyWidth += 5; 
+      }
+      texture = loadImage(image);
+      enemyHeight = (float) texture.height / (float) texture.width * enemyWidth;
     }
     else {
-      if(velocityX != 0 || velocityY != 0) {
+      if(firing) {
+         image += 'F'; 
+      }
+      else if(velocityX != 0 || velocityY != 0) {
         image += movementLetter;
       }
       else {
         image += 'E';
       }
       image += getAngleChar(player);
+      image += ".png";
+      texture = loadImage(image);
+      enemyWidth = (float) texture.width / (float) texture.height * enemyHeight;
     }
-    image += ".png";
-    texture = loadImage(image);
-    enemyWidth = (float) texture.width / (float) texture.height * enemyHeight;
     
   }
 }
