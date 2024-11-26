@@ -32,6 +32,7 @@ void draw() {
   enemy.updateTexture(player);
   camera_draw(player, enemy);
   draw_minimap(walls, map, false);
+  draw_crosshair();
 }
 
 
@@ -62,4 +63,15 @@ void draw_minimap(ArrayList<Wall> walls, Maze map, boolean blind) {
     ellipse(playerX, playerY, 5, 5);
     stroke(255);
     line(playerX, playerY, playerX + player.cameraForwardX * 10, playerY + player.cameraForwardY * 10);
+}
+
+void draw_crosshair() {
+ stroke(255);
+ line(width / 2 + 30, height / 2, width / 2 + 10, height / 2);
+ line(width / 2 - 30, height / 2, width / 2 - 10, height / 2);
+ line(width / 2, height / 2 + 30, width / 2, height / 2 + 10);
+ line(width / 2, height / 2 - 30, width / 2, height / 2 - 10);
+ fill(255);
+ circle(width / 2, height / 2, 2);
+  
 }
