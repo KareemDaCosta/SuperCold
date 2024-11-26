@@ -71,7 +71,7 @@ void camera_draw(Camera player, Enemy enemy) {
     float wallOffset = 0.25 - 0.5 * (wallStart + wallStop) / wallScreenHeight;
     
     float enemyDepth = directionX * result.enemyDistance * player.cameraForwardX + directionY * result.enemyDistance * player.cameraForwardY;
-    float enemyScreenHeight = enemy.enemyHeight * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
+    float enemyScreenHeight = 2 * enemy.enemyWidth * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
     int enemyStart = int(clamp(0.5 * bufferHeight - 0.25 * enemyScreenHeight, 0, 0.5 * bufferHeight));
     int enemyStop = bufferHeight - enemyStart;
     float enemyOffset = 0.25 - 0.5 * (enemyStart + enemyStop) / enemyScreenHeight;
@@ -130,7 +130,7 @@ void camera_draw(Camera player, Enemy enemy) {
     // Draw Enemy   
     if(result.enemyDistance > -1) {
       for(int j = enemyStart; j < enemyStop; j++) {
-        float v = j / enemyScreenHeight + enemyOffset;
+        float v = (j / enemyScreenHeight + enemyOffset) * 2;
         color albedo = enemy.texture.get(int(clamp(result.enemyU, 0, 1) * (enemy.texture.width - 1)), int(clamp(v, 0, 1) * (enemy.texture.height - 1)));
         if((albedo & 0x00FFFFFF) != 0) {
           buffer.pixels[i + j * bufferWidth] = albedo;
@@ -254,7 +254,7 @@ RaycastResult raycast(float directionX, float directionY, Wall enemyBoundary) {
       continue;
     if(i == walls.size() - 1) {
       result.enemyDistance = distance;
-      result.enemyU = ((u * walls.get(i).wallLength) % enemy.enemyHeight) / enemy.enemyHeight;
+      result.enemyU = ((u * walls.get(i).wallLength) % enemy.enemyWidth) / enemy.enemyWidth;
     }
     else {
       result.distance = distance;

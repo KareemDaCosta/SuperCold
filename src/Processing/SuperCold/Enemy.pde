@@ -9,7 +9,7 @@ class Enemy {
   int movementTimer;
   int dyingTimer;
   char dyingStage;
-  int enemyWidth = 3;
+  float enemyWidth = 3;
   float enemyHeight = 0;
   PImage texture;
 
