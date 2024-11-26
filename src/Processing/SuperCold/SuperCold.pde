@@ -73,5 +73,17 @@ void draw_crosshair() {
  line(width / 2, height / 2 - 30, width / 2, height / 2 - 10);
  fill(255);
  circle(width / 2, height / 2, 2);
-  
+}
+
+void mouseClicked() { 
+  triggerShot(player, enemy);
+}
+
+void triggerShot(Camera player, Enemy enemy) {
+  Wall enemyBoundary = getEnemyBoundary(player, enemy);
+  RaycastResult result = raycast(player.cameraForwardX, player.cameraForwardY, enemyBoundary);
+  if(result.enemyDistance > -1) {
+     //Enemy hit
+     enemy.triggerDeath();
+  }
 }
