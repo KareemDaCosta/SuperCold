@@ -11,7 +11,7 @@ class Camera {
   float cameraFov = 90;
   float cameraNearPlane = 1;
   float cameraFarPlane = 1000;
-  float cameraFogDistance = 100;
+  float cameraFogDistance = 150;
   float cameraAngle;
   float cameraLerp = 0.5;
   Camera() {
@@ -72,6 +72,8 @@ void camera_draw(Camera player, Enemy enemy) {
     
     float enemyDepth = directionX * result.enemyDistance * player.cameraForwardX + directionY * result.enemyDistance * player.cameraForwardY;
     float enemyScreenHeight = 2 * enemy.enemyWidth * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
+    
+    float enemyWallScreenHeight = wallHeight * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
     int enemyStart = int(clamp(0.5 * bufferHeight - 0.25 * enemyScreenHeight, 0, 0.5 * bufferHeight));
     int enemyStop = bufferHeight - enemyStart;
     float enemyOffset = 0.25 - 0.5 * (enemyStart + enemyStop) / enemyScreenHeight;
@@ -131,9 +133,12 @@ void camera_draw(Camera player, Enemy enemy) {
     if(result.enemyDistance > -1) {
       for(int j = enemyStart; j < enemyStop; j++) {
         float v = (j / enemyScreenHeight + enemyOffset) * 2;
+        float y = 0.5 * enemy.enemyHeight * (1 - 2 * v);
+        float distance = sqrt(y * y + result.enemyDistance * result.enemyDistance);
         color albedo = enemy.texture.get(int(clamp(result.enemyU, 0, 1) * (enemy.texture.width - 1)), int(clamp(v, 0, 1) * (enemy.texture.height - 1)));
+        float shade = clamp(1 - (distance - player.cameraNearPlane) / (player.cameraFogDistance - player.cameraNearPlane), 0, 1);
         if((albedo & 0x00FFFFFF) != 0) {
-          buffer.pixels[i + j * bufferWidth] = albedo;
+          buffer.pixels[i + (int)(clamp((j + (enemyWallScreenHeight - enemyScreenHeight)/2), 0, bufferHeight - 1)) * bufferWidth] = multiplyColor(albedo, shade);
         }
       }
       
