@@ -44,7 +44,7 @@ float wallHeight = 10;
 
 float epsilon = 0.001;
 
-void camera_draw(Camera player) {
+void camera_draw(Camera player, Enemy enemy) {
   background(0);
   float angle = radians(player.cameraAngle);
   player.cameraForwardX = cos(angle);
@@ -53,6 +53,7 @@ void camera_draw(Camera player) {
   player.cameraRightY = -cos(angle);
   float deltaX = tan(radians(player.cameraFov / 2)) * player.cameraNearPlane;
   float deltaZ = bufferHeight * deltaX / bufferWidth;
+  Wall enemyBoundary = getEnemyBoundary(player, enemy);
   // Raycasting
   for (int i = 0; i < bufferWidth; i++) {
     float offset = (2 * i / float(bufferWidth) - 1) * deltaX;
@@ -61,12 +62,20 @@ void camera_draw(Camera player) {
     float magnitude2D = sqrt(vectorX * vectorX + vectorY * vectorY);
     float directionX = vectorX / magnitude2D;
     float directionY = vectorY / magnitude2D;
-    RaycastResult result = raycast(directionX, directionY);
+    RaycastResult result = raycast(directionX, directionY, enemyBoundary);
+    
     float depth = directionX * result.distance * player.cameraForwardX + directionY * result.distance * player.cameraForwardY;
     float wallScreenHeight = wallHeight * (player.cameraNearPlane / depth) * (bufferHeight / deltaZ);
     int wallStart = int(clamp(0.5 * bufferHeight - 0.25 * wallScreenHeight, 0, 0.5 * bufferHeight));
     int wallStop = bufferHeight - wallStart;
     float wallOffset = 0.25 - 0.5 * (wallStart + wallStop) / wallScreenHeight;
+    
+    float enemyDepth = directionX * result.enemyDistance * player.cameraForwardX + directionY * result.enemyDistance * player.cameraForwardY;
+    float enemyScreenHeight = enemy.enemyHeight * (player.cameraNearPlane / enemyDepth) * (bufferHeight / deltaZ);
+    int enemyStart = int(clamp(0.5 * bufferHeight - 0.25 * enemyScreenHeight, 0, 0.5 * bufferHeight));
+    int enemyStop = bufferHeight - enemyStart;
+    float enemyOffset = 0.25 - 0.5 * (enemyStart + enemyStop) / enemyScreenHeight;
+    
     // Draw Ceilings
     for (int j = 0; j < wallStart; j++)
     {
@@ -96,6 +105,7 @@ void camera_draw(Camera player) {
       float shade = clamp(1 - (distance - player.cameraNearPlane) / (player.cameraFogDistance - player.cameraNearPlane), 0, 1);
       buffer.pixels[i + j * bufferWidth] = multiplyColor(albedo, shade);
     }
+    
     // Draw Floors
     for (int j = wallStop; j < bufferHeight; j++)
     {
@@ -114,6 +124,19 @@ void camera_draw(Camera player) {
       color albedo = floorTexture.get(int(clamp(u, 0, 1) * (floorTexture.width - 1)), int(clamp(v, 0, 1) * (floorTexture.height - 1)));
       float shade = clamp((1 - (distance - player.cameraNearPlane) / (player.cameraFogDistance - player.cameraNearPlane)), 0, 1);
       buffer.pixels[i + j * bufferWidth] = multiplyColor(albedo, shade);
+    }
+    
+    
+    // Draw Enemy   
+    if(result.enemyDistance > -1) {
+      for(int j = enemyStart; j < enemyStop; j++) {
+        float v = j / enemyScreenHeight + enemyOffset;
+        color albedo = enemy.texture.get(int(clamp(result.enemyU, 0, 1) * (enemy.texture.width - 1)), int(clamp(v, 0, 1) * (enemy.texture.height - 1)));
+        if((albedo & 0x00FFFFFF) != 0) {
+          buffer.pixels[i + j * bufferWidth] = albedo;
+        }
+      }
+      
     }
   }
   buffer.updatePixels();
@@ -214,8 +237,9 @@ float clamp(float x, float min, float max) {
   return x;
 }
 
-RaycastResult raycast(float directionX, float directionY) {
+RaycastResult raycast(float directionX, float directionY, Wall enemyBoundary) {
   RaycastResult result = new RaycastResult();
+  walls.add(enemyBoundary);
   for (int i = 0; i < walls.size(); i++) {
     float determinant = directionX * walls.get(i).dY - directionY * walls.get(i).dX;
     if (determinant < epsilon && determinant > -epsilon)
@@ -228,15 +252,30 @@ RaycastResult raycast(float directionX, float directionY) {
     u /= determinant;
     if (u < 0 || u > 1)
       continue;
-    result.distance = distance;
-    result.u = ((u * walls.get(i).wallLength) % wallHeight) / wallHeight;
+    if(i == walls.size() - 1) {
+      result.enemyDistance = distance;
+      result.enemyU = ((u * walls.get(i).wallLength) % enemy.enemyHeight) / enemy.enemyHeight;
+    }
+    else {
+      result.distance = distance;
+      result.u = ((u * walls.get(i).wallLength) % wallHeight) / wallHeight;
+    }
   }
+  walls.remove(walls.size() - 1);
   return result;
+}
+
+Wall getEnemyBoundary(Camera player, Enemy enemy) {
+   PVector vector = new PVector(player.cameraForwardX, player.cameraForwardY);
+   vector.rotate(HALF_PI).normalize();
+   return new Wall(enemy.x + vector.x * enemy.enemyWidth / 2, enemy.y + vector.y * enemy.enemyWidth / 2, enemy.x - vector.x * enemy.enemyWidth / 2, enemy.y - vector.y * enemy.enemyWidth / 2);
 }
 
 class RaycastResult {
   float distance = player.cameraFarPlane;
   float u;
+  float enemyDistance = -1;
+  float enemyU = -1;
   RaycastResult() {
   }
 }   

@@ -9,6 +9,9 @@ class Enemy {
   int movementTimer;
   int dyingTimer;
   char dyingStage;
+  int enemyWidth = 3;
+  float enemyHeight = 0;
+  PImage texture;
 
   Enemy(int startingX, int startingY) {
     x = startingX;
@@ -21,11 +24,13 @@ class Enemy {
     movementTimer = 20;
     dyingTimer = 0;
     dyingStage = 1;
+    texture = loadImage("./Sprites/B15BA1.png");
+    enemyHeight = (float) texture.height / (float) texture.width * enemyWidth;
   }
   
   void updatePosition(int newX, int newY) {
-      x = newX;
-      y = newY;
+    x = newX;
+    y = newY;
   }
   
   void updateVelocity(int newVelocityX, int newVelocityY) {
@@ -38,7 +43,7 @@ class Enemy {
      firingCountdown = 15;
   }
   
-  void updateTimers() {
+  void updateVariables() {
    if(movementTimer > 0) {
       movementTimer--;
       if(movementTimer == 0) {
@@ -80,5 +85,5 @@ class Enemy {
          }
       }
     }
-  }
+  } 
 }

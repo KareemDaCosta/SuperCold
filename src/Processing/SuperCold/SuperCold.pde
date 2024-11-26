@@ -20,7 +20,7 @@ void setup() {
   walls = new ArrayList<Wall>();
   setup_walls(map, walls);
   player = new Camera();
-  enemy = new Enemy(15, 25);
+  enemy = new Enemy(25, 35);
   buffer = createImage(bufferWidth, bufferHeight, RGB);
   floorTexture = loadImage("floor.jpg");
   wallTexture = loadImage("wall.jpg");
@@ -28,7 +28,7 @@ void setup() {
 }
 
 void draw() {
-  camera_draw(player);
+  camera_draw(player, enemy);
   draw_minimap(walls, map, false);
 }
 
