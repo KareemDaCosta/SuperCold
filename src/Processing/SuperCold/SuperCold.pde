@@ -9,9 +9,11 @@ final int mazeH = 5;
 final int blockSize = 10;
 final int minimapBoundarySize = 10;
 final char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
+final int gunCooldownMax = 12;
 float playerWidth = 0.2;
 PFont buttonFont;
 PFont titleFont;
+int gunCooldown = 0;
 
 int sceneW = 1280;
 int sceneH = 720;
@@ -34,6 +36,9 @@ void draw() {
     camera_draw(player, enemy);
     draw_minimap(walls, map, false);
     draw_crosshair();
+    if(gunCooldown > 0) {
+       gunCooldown--; 
+    }
   }
 }
 
@@ -97,6 +102,12 @@ void draw_crosshair() {
  line(width / 2, height / 2 - 30, width / 2, height / 2 - 10);
  fill(255);
  circle(width / 2, height / 2, 2);
+ if(gunCooldown > 0) {
+   stroke(150);
+   line(width / 2 - 30, height / 2 + 50, width / 2 + 30, height / 2 + 50);
+   stroke(255);
+   line(width / 2 - 30, height / 2 + 50, (width / 2 - 30 + (float) 60 / gunCooldownMax * (gunCooldownMax - gunCooldown)), height / 2 + 50);
+ }
 }
 
 void mouseClicked() { 
@@ -114,8 +125,12 @@ void mouseClicked() {
 }
 
 void triggerShot(Camera player, Enemy enemy) {
+  if(gunCooldown != 0) {
+     return; 
+  }
   Wall enemyBoundary = getEnemyBoundary(player, enemy);
   RaycastResult result = raycast(player.cameraForwardX, player.cameraForwardY, enemyBoundary);
+  gunCooldown = gunCooldownMax;
   if(result.enemyDistance > -1) {
      //Enemy hit
      enemy.triggerDeath();

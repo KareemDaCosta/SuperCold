@@ -43,8 +43,10 @@ class Enemy {
   }
   
   void triggerDeath() {
+    if(dyingStage == 0) {
      dyingTimer = 8;
      dyingStage = 1;
+    }
   }
   
   void updateVariables() {
