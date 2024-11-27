@@ -18,9 +18,10 @@ class Camera {
     cameraX = 15;
     cameraY = 15;
   }
-  Camera(int x, int y) {
+  Camera(int x, int y, float angle) {
     cameraX = x;
     cameraY = y;
+    cameraAngle = angle;
   }
 }
 
