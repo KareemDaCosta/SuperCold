@@ -2,6 +2,7 @@ Maze map;
 Camera player;
 Enemy enemy;
 ArrayList<Wall> walls;
+Intro intro;
 
 final int mazeW = 5;
 final int mazeH = 5;
@@ -9,6 +10,8 @@ final int blockSize = 10;
 final int minimapBoundarySize = 10;
 final char backChar = ' ', wallChar = 'X', cellChar = ' ', pathChar = '*';
 float playerWidth = 0.2;
+PFont buttonFont;
+PFont titleFont;
 
 int sceneW = 1280;
 int sceneH = 720;
@@ -16,23 +19,44 @@ int sceneH = 720;
 void setup() {
   size(1280, 720);
   frameRate(30);
+  intro = new Intro();
+  titleFont = createFont("Audiowide.ttf", 128);
+  buttonFont = createFont("Oxanium.ttf", 32);
+}
+
+void draw() {
+  if(intro.inIntro) {
+    intro.show_intro();
+  }
+  else {
+    enemy.updateVariables();
+    enemy.updateTexture(player);
+    camera_draw(player, enemy);
+    draw_minimap(walls, map, false);
+    draw_crosshair();
+  }
+}
+
+void setup_game_host() {
   map = new Maze(mazeW, mazeH);
   walls = new ArrayList<Wall>();
   setup_walls(map, walls);
   player = new Camera();
   enemy = new Enemy(25, 35);
-  buffer = createImage(bufferWidth, bufferHeight, RGB);
+  setup_game();  
+}
+
+void setup_game_lobby() {
+ //recieve game information and player coordinates from the host
+ setup_game();
+}
+
+void setup_game() {
   floorTexture = loadImage("floor.jpg");
   wallTexture = loadImage("wall.jpg");
   ceilingTexture = loadImage("ceiling.jpg");
-}
-
-void draw() {
-  enemy.updateVariables();
-  enemy.updateTexture(player);
-  camera_draw(player, enemy);
-  draw_minimap(walls, map, false);
-  draw_crosshair();
+  buffer = createImage(bufferWidth, bufferHeight, RGB);
+  intro.inIntro = false;
 }
 
 
@@ -76,7 +100,17 @@ void draw_crosshair() {
 }
 
 void mouseClicked() { 
-  triggerShot(player, enemy);
+  if(intro.inIntro) {
+    if(intro.selectedOption == "Host Game") {
+       setup_game_host();
+    }
+    else {
+       setup_game_lobby(); 
+    }
+  }
+  else {
+     triggerShot(player, enemy); 
+  }
 }
 
 void triggerShot(Camera player, Enemy enemy) {

@@ -18,6 +18,10 @@ class Camera {
     cameraX = 15;
     cameraY = 15;
   }
+  Camera(int x, int y) {
+    cameraX = x;
+    cameraY = y;
+  }
 }
 
 // Input
