@@ -13,9 +13,9 @@ class Wall {
     wallLength = sqrt(dX * dX + dY * dY);
   }
   
-   void show(int offsetX, float shrink) {
+   void show(int offsetX, float shrink, int mapHeight) {
     stroke(255);
-    line(p1X/shrink + offsetX, p1Y/shrink, p2X/shrink + offsetX, p2Y/shrink);
+    line(p1X/shrink + offsetX, mapHeight - p1Y/shrink, p2X/shrink + offsetX, mapHeight - p2Y/shrink);
    }
 }
 

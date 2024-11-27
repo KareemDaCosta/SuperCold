@@ -71,7 +71,7 @@ void draw_minimap(ArrayList<Wall> walls, Maze map, boolean blind) {
     
     if(!blind) {
       for (Wall wall : walls) {
-        wall.show(offsetX, shrink);
+        wall.show(offsetX, shrink, mapHeight);
       }
     }
     
@@ -84,9 +84,9 @@ void draw_minimap(ArrayList<Wall> walls, Maze map, boolean blind) {
     float playerX = offsetX + player.cameraX/shrink;
     float playerY = player.cameraY/shrink;
     fill(255);
-    ellipse(playerX, playerY, 5, 5);
+    ellipse(playerX, mapHeight - playerY, 5, 5);
     stroke(255);
-    line(playerX, playerY, playerX + player.cameraForwardX * 10, playerY + player.cameraForwardY * 10);
+    line(playerX, mapHeight - playerY, playerX + player.cameraForwardX * 10, mapHeight - playerY - player.cameraForwardY * 10);
 }
 
 void draw_crosshair() {
