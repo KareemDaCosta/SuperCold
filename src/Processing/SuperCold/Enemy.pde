@@ -43,7 +43,7 @@ class Enemy {
   }
   
   void triggerDeath() {
-     dyingTimer = 20;
+     dyingTimer = 8;
      dyingStage = 1;
   }
   
@@ -75,7 +75,7 @@ class Enemy {
    if(dyingTimer > 0) {
       dyingTimer--;
       if(dyingTimer == 0) {
-         dyingTimer = 10;
+         dyingTimer = 8;
          dyingStage++;
          if(dyingStage == 6) {
             //Trigger new game 
