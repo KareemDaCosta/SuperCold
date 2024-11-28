@@ -37,10 +37,31 @@ void draw() {
     intro.show_intro();
   }
   else if (playerDyingCountdown > 0) {
-   //triggered by ESP message (set up during communication stage) 
-    if(playerDyingStage == 0) {
-       
+    //triggered by ESP message (set up during communication stage) 
+    playerDyingCountdown--;
+    fill(255, 0, 0, 35);
+    noStroke();
+    rect(0, 0, width, height);
+    if(playerDyingCountdown == 0) {
+      playerDyingStage++;
+      if(playerDyingStage == 2) {
+        playerDyingCountdown = 30;
+        enemyScore++; 
+        fill(255, 0, 0);
+        rect(0, 0, width, height);
+      }
+      if(playerDyingStage >= 3) {
+         //TODO: Send respawn message
+         playerDyingStage = 0;
+         player = new Camera();
+      }
     }
+    if(playerDyingStage == 2) {
+      fill(255);
+      textFont(titleFont);
+      text("You Died", width/2, height/2 + 64);
+    }
+    drawScore();
   }
   else {
     if(gunCooldown > 0) {
@@ -140,6 +161,7 @@ void mouseClicked() {
     // DELETE THIS LATER (only for testing)
     if(enemy.dead) {
         enemy.updatePosition(25, 35); 
+        triggerPlayerDeath();
     }
   }
 }
@@ -158,12 +180,14 @@ void triggerShot(Camera player, Enemy enemy) {
 }
 
 void triggerPlayerDeath() {
-  if(playerDyingStage > 0) {
-     
-  }  
+  if(playerDyingStage == 0) {
+   playerDyingStage = 1;
+   playerDyingCountdown = 20;
+  }
 }
 
 void drawScore() {
+  fill(255);
   textFont(titleFont);
   text(Integer.toString(playerScore) + " - " + Integer.toString(enemyScore), width/2, height/6);
 }

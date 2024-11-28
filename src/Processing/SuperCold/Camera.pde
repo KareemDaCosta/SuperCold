@@ -152,6 +152,10 @@ void camera_draw(Camera player, Enemy enemy) {
   buffer.updatePixels();
   image(buffer, 0, 0, targetWidth, targetHeight);
 
+  if(playerDyingStage != 0) {
+     return; 
+  }
+  
   // Update Input
   float velocityX = 0;
   float velocityY = 0;
