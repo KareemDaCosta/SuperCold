@@ -4,6 +4,13 @@ Enemy enemy;
 ArrayList<Wall> walls;
 Intro intro;
 
+final int[][] respawnLocations = {
+  {15, 15, 0},
+  {15, 95, 0},
+  {195, 15, 180},
+  {195, 95, 180},
+};
+
 final int mazeW = 5;
 final int mazeH = 5;
 final int blockSize = 10;
@@ -37,31 +44,7 @@ void draw() {
     intro.show_intro();
   }
   else if (playerDyingCountdown > 0) {
-    //triggered by ESP message (set up during communication stage) 
-    playerDyingCountdown--;
-    fill(255, 0, 0, 35);
-    noStroke();
-    rect(0, 0, width, height);
-    if(playerDyingCountdown == 0) {
-      playerDyingStage++;
-      if(playerDyingStage == 2) {
-        playerDyingCountdown = 30;
-        enemyScore++; 
-        fill(255, 0, 0);
-        rect(0, 0, width, height);
-      }
-      if(playerDyingStage >= 3) {
-         //TODO: Send respawn message
-         playerDyingStage = 0;
-         player = new Camera();
-      }
-    }
-    if(playerDyingStage == 2) {
-      fill(255);
-      textFont(titleFont);
-      text("You Died", width/2, height/2 + 64);
-    }
-    drawScore();
+    handlePlayerDeath();
   }
   else {
     if(gunCooldown > 0) {
@@ -185,6 +168,37 @@ void triggerPlayerDeath() {
    playerDyingCountdown = 20;
   }
 }
+
+void handlePlayerDeath() {
+  //triggered by ESP message (set up during communication stage) 
+    playerDyingCountdown--;
+    fill(255, 0, 0, 35);
+    noStroke();
+    rect(0, 0, width, height);
+    if(playerDyingCountdown == 0) {
+      playerDyingStage++;
+      if(playerDyingStage == 2) {
+        playerDyingCountdown = 30;
+        enemyScore++; 
+        fill(255, 0, 0);
+        rect(0, 0, width, height);
+      }
+      if(playerDyingStage >= 3) {
+         //TODO: Send respawn message
+         playerDyingStage = 0;
+         int respawnLocationIndex = (int) random(0, 4);
+         int[] respawnLocation = respawnLocations[respawnLocationIndex];
+         player = new Camera(respawnLocation[0], respawnLocation[1], respawnLocation[2]);
+      }
+    }
+    if(playerDyingStage == 2) {
+      fill(255);
+      textFont(titleFont);
+      text("You Died", width/2, height/2 + 64);
+    }
+    drawScore();
+}
+
 
 void drawScore() {
   fill(255);
