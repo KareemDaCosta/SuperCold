@@ -14,9 +14,15 @@ float playerWidth = 0.2;
 PFont buttonFont;
 PFont titleFont;
 int gunCooldown = 0;
+int playerDyingCountdown = 0;
+int playerDyingStage = 0;
 
 int sceneW = 1280;
 int sceneH = 720;
+
+int playerScore;
+int enemyScore;
+
 
 void setup() {
   size(1280, 720);
@@ -30,15 +36,23 @@ void draw() {
   if(intro.inIntro) {
     intro.show_intro();
   }
+  else if (playerDyingCountdown > 0) {
+   //triggered by ESP message (set up during communication stage) 
+    if(playerDyingStage == 0) {
+       
+    }
+  }
   else {
+    if(gunCooldown > 0) {
+       gunCooldown--; 
+    }
+    
     enemy.updateVariables();
     enemy.updateTexture(player);
     camera_draw(player, enemy);
     draw_minimap(walls, map, false);
     draw_crosshair();
-    if(gunCooldown > 0) {
-       gunCooldown--; 
-    }
+    drawScore();
   }
 }
 
@@ -62,6 +76,8 @@ void setup_game() {
   ceilingTexture = loadImage("ceiling.jpg");
   buffer = createImage(bufferWidth, bufferHeight, RGB);
   intro.inIntro = false;
+  playerScore = 0;
+  enemyScore = 0;
 }
 
 
@@ -121,6 +137,10 @@ void mouseClicked() {
   }
   else {
      triggerShot(player, enemy); 
+    // DELETE THIS LATER (only for testing)
+    if(enemy.dead) {
+        enemy.updatePosition(25, 35); 
+    }
   }
 }
 
@@ -135,4 +155,15 @@ void triggerShot(Camera player, Enemy enemy) {
      //Enemy hit
      enemy.triggerDeath();
   }
+}
+
+void triggerPlayerDeath() {
+  if(playerDyingStage > 0) {
+     
+  }  
+}
+
+void drawScore() {
+  textFont(titleFont);
+  text(Integer.toString(playerScore) + " - " + Integer.toString(enemyScore), width/2, height/6);
 }

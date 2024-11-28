@@ -11,6 +11,7 @@ class Enemy {
   float enemyWidth;
   float enemyHeight;
   PImage texture;
+  boolean dead;
 
   Enemy(int startingX, int startingY) {
     x = startingX;
@@ -23,6 +24,7 @@ class Enemy {
     enemyHeight = 8;
     dyingTimer = 0;
     dyingStage = 0;
+    dead = false;
     texture = loadImage("./Sprites/B15BA1.png");
     enemyWidth = (float) texture.width / (float) texture.height * enemyHeight;
   }
@@ -30,6 +32,8 @@ class Enemy {
   void updatePosition(int newX, int newY) {
     x = newX;
     y = newY;
+    enemyHeight = 8;
+    dead = false;
   }
   
   void updateVelocity(int newVelocityX, int newVelocityY) {
@@ -43,9 +47,10 @@ class Enemy {
   }
   
   void triggerDeath() {
-    if(dyingStage == 0) {
+    if(dyingStage == 0 && !dead) {
      dyingTimer = 8;
      dyingStage = 1;
+     playerScore++;
     }
   }
   
@@ -81,9 +86,9 @@ class Enemy {
          dyingStage++;
          if(dyingStage == 6) {
             //Trigger new game 
-            enemyHeight = 8;
             dyingStage = 0;
             dyingTimer = 0;
+            dead = true;
          }
       }
     }
@@ -134,9 +139,9 @@ class Enemy {
   
   void updateTexture(Camera player) {
     String image = "./Sprites/B15B";
-    if(dyingStage > 0) {
+    if(dyingStage > 0 || dead) {
       image += 'H';
-      image += Integer.toString(dyingStage);
+      image += dead ? '5' : Integer.toString(dyingStage);
       image += ".png";
       enemyWidth = 5.5;
       if(dyingStage == 3) {
@@ -145,7 +150,7 @@ class Enemy {
       if(dyingStage == 4) {
          enemyWidth += 2;
       }
-      if(dyingStage == 5) {
+      if(dyingStage == 5 || dead) {
          enemyWidth += 5; 
       }
       texture = loadImage(image);
