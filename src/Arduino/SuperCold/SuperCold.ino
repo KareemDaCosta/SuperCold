@@ -37,13 +37,12 @@ void receiveCallback(const esp_now_recv_info_t *macAddr, const uint8_t *data, in
   // Make sure we are null terminated
   buffer[msgLen] = 0;
   String recvd = String(buffer);
-  Serial.println(recvd);
   // Format the MAC address
   char macStr[18];
   // formatMacAddress(macAddr, macStr, 18);
 
   // Send message to the serial port
-  Serial.printf("%s", buffer);
+  Serial.println(recvd);
 }
 
 void sentCallback(const uint8_t *macAddr, esp_now_send_status_t status)
@@ -51,10 +50,6 @@ void sentCallback(const uint8_t *macAddr, esp_now_send_status_t status)
 {
   char macStr[18];
   formatMacAddress(macAddr, macStr, 18);
-  Serial.print("Last Packet Sent to: ");
-  Serial.println(macStr);
-  Serial.print("Last Packet Send Status: ");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
 void broadcast(const String &message)
@@ -68,8 +63,6 @@ void broadcast(const String &message)
     esp_now_add_peer(&peerInfo);
   }
   // Send message
-  Serial.print("Sent message: ");
-  Serial.println(message);
   esp_err_t result = esp_now_send(broadcastAddress, (const uint8_t *)message.c_str(), message.length());
 }
 
@@ -77,22 +70,15 @@ void espnowSetup() {
   // Set ESP32 in STA mode to begin with
   delay(500);
   WiFi.mode(WIFI_STA);
-  Serial.println("ESP-NOW Broadcast Demo");
-
-  // Print MAC address
-  Serial.print("MAC Address: ");
-  Serial.println(WiFi.macAddress());
 
   // Disconnect from WiFi
   WiFi.disconnect();
 
   // Initialize ESP-NOW
   if (esp_now_init() == ESP_OK) {
-    Serial.println("ESP-NOW Init Success");
     esp_now_register_recv_cb(receiveCallback);
     esp_now_register_send_cb(sentCallback);
   } else {
-    Serial.println("ESP-NOW Init Failed");
     delay(3000);
     ESP.restart();
   }
@@ -100,8 +86,10 @@ void espnowSetup() {
 
 
 void loop() {
-  while(Serial.available() > 0) {
-    String message = Serial.readStringUntil('\n');
-    broadcast(message);
+  if(Serial.available() > 0) {
+    while(Serial.available() > 0) {
+      String message = Serial.readStringUntil('\n');
+      broadcast(message);
+    }
   }
 }

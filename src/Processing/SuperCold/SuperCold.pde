@@ -6,7 +6,10 @@ Enemy enemy;
 ArrayList<Wall> walls;
 Intro intro;
 boolean isHost = false;
-int broadcastLobbyTimer = 150;
+int broadcastLobbyTimer = 0;
+
+boolean lobbySetup1 = false;
+boolean lobbySetup2 = false;
 
 Serial myPort;  // Create object from Serial class
 
@@ -46,7 +49,7 @@ void setup() {
   
   String portName = Serial.list()[2];
   //Used for getting proper port
-  //  printArray(Serial.list());
+  //printArray(Serial.list());
   //println(portName);
   
   myPort = new Serial(this, portName, 9600); // ensure baudrate is consistent with arduino sketch
@@ -58,14 +61,19 @@ void draw() {
     intro.show_intro();
   }
   else if(intro.inSetup) {
-     intro.show_setup(); 
-     if(isHost) {
-       if(broadcastLobbyTimer < 0) {
-         broadcastLobby(); 
-         broadcastLobbyTimer = 600;
-       }
-       else {
-         broadcastLobbyTimer--; 
+     if(lobbySetup1 && lobbySetup2) {
+        intro.inSetup = false;
+     }
+     else {
+       intro.show_setup(); 
+       if(isHost) {
+         if(broadcastLobbyTimer <= 0) {
+           broadcastLobby(); 
+           broadcastLobbyTimer = 150;
+         }
+         else {
+           broadcastLobbyTimer--; 
+         }
        }
      }
   }
@@ -257,12 +265,15 @@ void sendMessage(char prefix, ArrayList<String> message) {
     }
   }
   myPort.write(prefix + ": " + formattedMessage + "\n");
+  System.out.println("Sent message: " + prefix + ": " + formattedMessage + "\n");
 }
 
 void serialEvent(Serial myPort) {
+  try {
   if(myPort.available() > 0) {
     while(myPort.available() > 0) {
      String recievedMessage = myPort.readStringUntil('\n').trim();
+     System.out.println("Recieved message" + recievedMessage);
      String[] components = recievedMessage.split(": ");
      String[] message = components[1].split(",");
      switch(components[0]) {
@@ -282,11 +293,23 @@ void serialEvent(Serial myPort) {
           handleSetup(message);
         }
         break;
+      case "M":
+        if(intro.inSetup && !isHost) {
+          handleMap(message);
+        }
       case "A":
-        handleAcknowledge();
+        handleAcknowledge('A');
         break;
-      }
+      case "B":
+        handleAcknowledge('B');
+        break;
+     }
     }
+  }
+  }
+  catch(RuntimeException e) {
+    e.printStackTrace();
+    System.out.println(e);
   }
 }
 
@@ -304,19 +327,23 @@ void handleSetup(String[] message) {
   
   map.gridDimensionX = Integer.parseInt(message[6]);
   map.gridDimensionY = Integer.parseInt(message[7]);
+
+  lobbySetup1 = true;
   
+  ArrayList<String> new_message = new ArrayList<>();
+  sendMessage('A', new_message);
+}
+
+void handleMap(String[] message) {
   map.grid = new char[map.gridDimensionX][map.gridDimensionY];
   
   for(int y_1 = 0; y_1 < map.gridDimensionY; y_1++) {
     for(int x_1 = 0; x_1 < map.gridDimensionX; x_1++) {
-      int i = map.gridDimensionX * x_1 + y_1 + 8;
+      int i = map.gridDimensionX * x_1 + y_1;
       map.grid[y_1][x_1] = message[i].charAt(0);
     }
   }
-  intro.inSetup = false;
-  
-  ArrayList<String> new_message = new ArrayList<>();
-  sendMessage('A', new_message);
+  lobbySetup2 = true;
 }
 
 void broadcastLobby() {
@@ -332,14 +359,23 @@ void broadcastLobby() {
   message.add("" + map.gridDimensionX);
   message.add("" + map.gridDimensionY);
   
+  String map_str = "";
   for(int i = 0; i < map.grid.length; i++) {
     for(int j = 0; j < map.grid[0].length; j++) {
-      message.add("" + map.grid[i][j]);
+      map_str += "" + map.grid[i][j];
     }
   }
+  ArrayList<String> map = new ArrayList<>();
+  map.add(map_str);
   sendMessage('S', message);
+  sendMessage('M', map);
 }
 
-void handleAcknowledge() {
-  intro.inSetup = false;
+void handleAcknowledge(char c) {
+  if(c == 'A') {
+    lobbySetup1 = true; 
+  }
+  else {
+    lobbySetup2 = true; 
+  }
 }
