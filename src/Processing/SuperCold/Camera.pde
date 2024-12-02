@@ -18,7 +18,7 @@ class Camera {
     cameraX = 15;
     cameraY = 15;
   }
-  Camera(int x, int y, float angle) {
+  Camera(float x, float y, float angle) {
     cameraX = x;
     cameraY = y;
     cameraAngle = angle;
@@ -214,6 +214,17 @@ void camera_draw(Camera player, Enemy enemy) {
   
   player.cameraTurnVelocity = player.cameraLerp * velocityZ + (1 - player.cameraLerp) * player.cameraTurnVelocity;
   player.cameraAngle += player.cameraTurnVelocity;
+  sendPlayerInfo(player);
+}
+
+void sendPlayerInfo(Camera player) {
+ ArrayList<String> message = new ArrayList<>();
+ message.add("" + player.cameraX);
+ message.add("" + player.cameraY);
+ message.add("" + player.cameraVelocityX);
+ message.add("" + player.cameraVelocityY);
+ message.add("" + player.cameraAngle);
+ sendMessage('P', message);
 }
 
 color multiplyColor(color col, float a) {

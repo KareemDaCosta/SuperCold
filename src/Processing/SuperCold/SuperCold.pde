@@ -1,8 +1,14 @@
+import processing.serial.*;
+
 Maze map;
 Camera player;
 Enemy enemy;
 ArrayList<Wall> walls;
 Intro intro;
+boolean isHost = false;
+int broadcastLobbyTimer = 150;
+
+Serial myPort;  // Create object from Serial class
 
 final int[][] respawnLocations = {
   {15, 15, 0},
@@ -37,11 +43,31 @@ void setup() {
   intro = new Intro();
   titleFont = createFont("Audiowide.ttf", 128);
   buttonFont = createFont("Oxanium.ttf", 32);
+  
+  String portName = Serial.list()[2];
+  //Used for getting proper port
+  //  printArray(Serial.list());
+  //println(portName);
+  
+  myPort = new Serial(this, portName, 9600); // ensure baudrate is consistent with arduino sketch
+  myPort.bufferUntil('\n');
 }
 
 void draw() {
   if(intro.inIntro) {
     intro.show_intro();
+  }
+  else if(intro.inSetup) {
+     intro.show_setup(); 
+     if(isHost) {
+       if(broadcastLobbyTimer < 0) {
+         broadcastLobby(); 
+         broadcastLobbyTimer = 600;
+       }
+       else {
+         broadcastLobbyTimer--; 
+       }
+     }
   }
   else if (playerDyingCountdown > 0) {
     handlePlayerDeath();
@@ -61,12 +87,19 @@ void draw() {
 }
 
 void setup_game_host() {
-  map = new Maze(mazeW, mazeH);
+  setup_game();  
+  int playerLocationIndex = (int) random(0, 4);
+  int enemyLocationIndex = (int) random(0, 4);
+  while(enemyLocationIndex == playerLocationIndex) {
+    enemyLocationIndex = (int) random(0, 4);
+  }
+  int[] playerLocation = respawnLocations[playerLocationIndex];
+  int[] enemyLocation = respawnLocations[enemyLocationIndex];
   walls = new ArrayList<Wall>();
   setup_walls(map, walls);
-  player = new Camera();
-  enemy = new Enemy(25, 35);
-  setup_game();  
+  player = new Camera(playerLocation[0], playerLocation[1], playerLocation[2]);
+  enemy = new Enemy(enemyLocation[0], enemyLocation[1], enemyLocation[2]);
+  isHost = true;
 }
 
 void setup_game_lobby() {
@@ -75,11 +108,13 @@ void setup_game_lobby() {
 }
 
 void setup_game() {
+  map = new Maze(mazeW, mazeH);
   floorTexture = loadImage("floor.jpg");
   wallTexture = loadImage("wall.jpg");
   ceilingTexture = loadImage("ceiling.jpg");
   buffer = createImage(bufferWidth, bufferHeight, RGB);
   intro.inIntro = false;
+  intro.inSetup = true;
   playerScore = 0;
   enemyScore = 0;
 }
@@ -156,10 +191,17 @@ void triggerShot(Camera player, Enemy enemy) {
   Wall enemyBoundary = getEnemyBoundary(player, enemy);
   RaycastResult result = raycast(player.cameraForwardX, player.cameraForwardY, enemyBoundary);
   gunCooldown = gunCooldownMax;
+  ArrayList<String> message = new ArrayList<>();
   if(result.enemyDistance > -1) {
      //Enemy hit
+     message.add("true");
      enemy.triggerDeath();
   }
+  else {
+     message.add("false");
+
+  }
+  sendMessage('F', message);
 }
 
 void triggerPlayerDeath() {
@@ -204,4 +246,100 @@ void drawScore() {
   fill(255);
   textFont(titleFont);
   text(Integer.toString(playerScore) + " - " + Integer.toString(enemyScore), width/2, height/6);
+}
+
+void sendMessage(char prefix, ArrayList<String> message) {
+  String formattedMessage = "";
+  for(int i = 0; i < message.size(); i++) {
+    formattedMessage += message.get(i);
+    if(i < message.size() - 1) {
+       formattedMessage += ","; 
+    }
+  }
+  myPort.write(prefix + ": " + formattedMessage + "\n");
+}
+
+void serialEvent(Serial myPort) {
+  if(myPort.available() > 0) {
+    while(myPort.available() > 0) {
+     String recievedMessage = myPort.readStringUntil('\n').trim();
+     String[] components = recievedMessage.split(": ");
+     String[] message = components[1].split(",");
+     switch(components[0]) {
+      case "P":
+        enemy.updatePosition(Float.parseFloat(message[0]), Float.parseFloat(message[1]));
+        enemy.updateVelocity(Float.parseFloat(message[2]), Float.parseFloat(message[3]));
+        enemy.updateCameraAngle(Float.parseFloat(message[4]));
+        break;
+      case "F":
+        enemy.fire();
+        if(message[0] == "true") {
+          triggerPlayerDeath();
+        }
+        break;
+      case "S":
+        if(intro.inSetup && !isHost) {
+          handleSetup(message);
+        }
+        break;
+      case "A":
+        handleAcknowledge();
+        break;
+      }
+    }
+  }
+}
+
+void handleSetup(String[] message) {
+  float x, y, angle;
+  x = Float.parseFloat(message[0]);
+  y = Float.parseFloat(message[1]);
+  angle = Float.parseFloat(message[2]);
+  enemy = new Enemy(x, y, angle);
+  
+  x = Float.parseFloat(message[3]);
+  y = Float.parseFloat(message[4]);
+  angle = Float.parseFloat(message[5]);
+  player = new Camera(x, y, angle);
+  
+  map.gridDimensionX = Integer.parseInt(message[6]);
+  map.gridDimensionY = Integer.parseInt(message[7]);
+  
+  map.grid = new char[map.gridDimensionX][map.gridDimensionY];
+  
+  for(int y_1 = 0; y_1 < map.gridDimensionY; y_1++) {
+    for(int x_1 = 0; x_1 < map.gridDimensionX; x_1++) {
+      int i = map.gridDimensionX * x_1 + y_1 + 8;
+      map.grid[y_1][x_1] = message[i].charAt(0);
+    }
+  }
+  intro.inSetup = false;
+  
+  ArrayList<String> new_message = new ArrayList<>();
+  sendMessage('A', new_message);
+}
+
+void broadcastLobby() {
+  ArrayList<String> message = new ArrayList<>();
+  message.add("" + player.cameraX);
+  message.add("" + player.cameraY);
+  message.add("" + player.cameraAngle);
+ 
+  message.add("" + enemy.x);
+  message.add("" + enemy.y);
+  message.add("" + enemy.cameraAngle);
+  
+  message.add("" + map.gridDimensionX);
+  message.add("" + map.gridDimensionY);
+  
+  for(int i = 0; i < map.grid.length; i++) {
+    for(int j = 0; j < map.grid[0].length; j++) {
+      message.add("" + map.grid[i][j]);
+    }
+  }
+  sendMessage('S', message);
+}
+
+void handleAcknowledge() {
+  intro.inSetup = false;
 }

@@ -13,11 +13,11 @@ class Enemy {
   PImage texture;
   boolean dead;
 
-  Enemy(int startingX, int startingY) {
+  Enemy(float startingX, float startingY, float startingCameraAngle) {
     x = startingX;
     y = startingY;
     firing = false;
-    cameraAngle = 3 * QUARTER_PI;
+    cameraAngle = startingCameraAngle;
     firingCountdown = 0;
     movementLetter = 'A';
     movementTimer = 20;
@@ -29,16 +29,20 @@ class Enemy {
     enemyWidth = (float) texture.width / (float) texture.height * enemyHeight;
   }
   
-  void updatePosition(int newX, int newY) {
+  void updatePosition(float newX, float newY) {
     x = newX;
     y = newY;
     enemyHeight = 8;
     dead = false;
   }
   
-  void updateVelocity(int newVelocityX, int newVelocityY) {
+  void updateVelocity(float newVelocityX, float newVelocityY) {
     velocityX = newVelocityX;
     velocityY = newVelocityY;
+  }
+  
+  void updateCameraAngle(float newCameraAngle) {
+     cameraAngle = newCameraAngle; 
   }
   
   void fire() {

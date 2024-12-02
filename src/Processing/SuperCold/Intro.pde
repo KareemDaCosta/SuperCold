@@ -1,9 +1,11 @@
 class Intro {
   String selectedOption;
   boolean inIntro;
+  boolean inSetup;
   Intro() {
     selectedOption = "Host Game";
     inIntro = true;
+    inSetup = false;
   }
   
   void show_intro() {
@@ -66,4 +68,17 @@ class Intro {
     text("Join Lobby", width - width/6 - width/4 + width/8, (3 * height/5 + height/12 + 12));
   }
   
+  void show_setup() {
+    textAlign(CENTER);
+    textFont(titleFont);
+    fill(0, 10);
+    noStroke();
+    rect(0, 0, width, height);
+    fill(255);
+    ellipse(random(width), random(height), 2, 2);
+    text("Super Cold", width/2, 2*height/5);
+    
+    textFont(buttonFont);
+    text("Loading...", width/2, 3 * height/5 + height/12 + 12); 
+  }
 }
