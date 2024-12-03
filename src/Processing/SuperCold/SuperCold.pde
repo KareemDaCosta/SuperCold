@@ -232,7 +232,6 @@ void handlePlayerDeath() {
         rect(0, 0, width, height);
       }
       if(playerDyingStage >= 3) {
-         //TODO: Send respawn message
          playerDyingStage = 0;
          int respawnLocationIndex = (int) random(0, 4);
          int[] respawnLocation = respawnLocations[respawnLocationIndex];
@@ -367,7 +366,7 @@ void broadcastLobby() {
  
   message.add("" + enemy.x);
   message.add("" + enemy.y);
-  message.add("" + enemy.cameraAngle);
+  message.add("" + enemy.cameraAngle / PI * 180);
   
   message.add("" + map.gridDimensionX);
   message.add("" + map.gridDimensionY);
