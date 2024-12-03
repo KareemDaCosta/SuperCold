@@ -187,11 +187,6 @@ void mouseClicked() {
   }
   else {
      triggerShot(player, enemy); 
-    // DELETE THIS LATER (only for testing)
-    if(enemy.dead) {
-        enemy.updatePosition(25, 35); 
-        triggerPlayerDeath();
-    }
   }
 }
 
