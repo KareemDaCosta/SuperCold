@@ -17,7 +17,7 @@ class Enemy {
     x = startingX;
     y = startingY;
     firing = false;
-    cameraAngle = startingCameraAngle;
+    cameraAngle = startingCameraAngle / 90 * PI;
     firingCountdown = 0;
     movementLetter = 'A';
     movementTimer = 20;
@@ -42,7 +42,7 @@ class Enemy {
   }
   
   void updateCameraAngle(float newCameraAngle) {
-     cameraAngle = newCameraAngle; 
+     cameraAngle = newCameraAngle / 90 * PI; 
   }
   
   void fire() {
