@@ -264,8 +264,6 @@ float clamp(float x, float min, float max) {
 
 RaycastResult raycast(float directionX, float directionY, Wall enemyBoundary) {
   RaycastResult result = new RaycastResult();
-  System.out.println(directionX);
-  System.out.println(directionY);
   walls.add(enemyBoundary);
   for (int i = 0; i < walls.size(); i++) {
     float determinant = directionX * walls.get(i).dY - directionY * walls.get(i).dX;

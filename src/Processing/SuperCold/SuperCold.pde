@@ -346,10 +346,14 @@ void handleMap(String[] message) {
   System.out.println(message[0]);
   for(int x = 0; x < map.gridDimensionX; x++) {
     for(int y = 0; y < map.gridDimensionY; y++) {
-      int i = map.gridDimensionY * y + x;
+      int i = map.gridDimensionY * x + y;
       map.grid[x][y] = message[0].charAt(i);
     }
   }
+  
+  walls = new ArrayList<Wall>();
+  setup_walls(map, walls);
+  
   lobbySetup2 = true;
   
   ArrayList<String> new_message = new ArrayList<>();
