@@ -226,7 +226,7 @@ void handlePlayerDeath() {
     if(playerDyingCountdown == 0) {
       playerDyingStage++;
       if(playerDyingStage == 2) {
-        playerDyingCountdown = 30;
+        playerDyingCountdown = 60;
         enemyScore++; 
         fill(255, 0, 0);
         rect(0, 0, width, height);
