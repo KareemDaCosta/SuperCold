@@ -88,7 +88,7 @@ void draw() {
     enemy.updateVariables();
     enemy.updateTexture(player);
     camera_draw(player, enemy);
-    draw_minimap(walls, map, false);
+    //draw_minimap(walls, map, false);
     draw_crosshair();
     drawScore();
   }
