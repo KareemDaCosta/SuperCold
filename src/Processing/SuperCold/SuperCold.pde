@@ -61,8 +61,6 @@ void draw() {
     intro.show_intro();
   }
   else if(intro.inSetup) {
-    System.out.println("lobbySetup1" + lobbySetup1);
-    System.out.println("lobbySetup2" + lobbySetup2);
      if(lobbySetup1 && lobbySetup2) {
         intro.inSetup = false;
      }
@@ -301,7 +299,6 @@ void serialEvent(Serial myPort) {
       case "F":
         message = components[1].split(",");
         enemy.fire();
-        System.out.println(message[0]);
         if(message[0].equals("true")) {
           triggerPlayerDeath();
         }
@@ -351,7 +348,6 @@ void handleSetup(String[] message) {
 
 void handleMap(String[] message) {
   map.grid = new char[map.gridDimensionX][map.gridDimensionY];
-  System.out.println(message[0]);
   for(int x = 0; x < map.gridDimensionX; x++) {
     for(int y = 0; y < map.gridDimensionY; y++) {
       int i = map.gridDimensionY * x + y;

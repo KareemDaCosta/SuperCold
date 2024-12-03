@@ -107,7 +107,7 @@ class Enemy {
   char getAngleChar(Camera player) {
     PVector camera_vector = new PVector(player.cameraX - x, player.cameraY - y);
     PVector movement_vector = new PVector(velocityX, velocityY);
-    if(velocityX == 0 && velocityY == 0) {
+    if(((velocityX > 0 && velocityX - 0.2 < 0) || (velocityX < 0 && velocityX + 0.2 > 0)) && ((velocityY > 0 && velocityY - 0.2 < 0) || (velocityY < 0 && velocityY + 0.2 > 0))) {
       movement_vector = PVector.fromAngle(cameraAngle);
     }
     float angle = computeAngle(camera_vector, movement_vector);
@@ -165,10 +165,10 @@ class Enemy {
          image += 'F'; 
       }
       else if(((velocityX > 0 && velocityX - 0.2 < 0) || (velocityX < 0 && velocityX + 0.2 > 0)) && ((velocityY > 0 && velocityY - 0.2 < 0) || (velocityY < 0 && velocityY + 0.2 > 0))) {
-        image += movementLetter;
+        image += 'E';
       }
       else {
-        image += 'E';
+        image += movementLetter;
       }
       image += getAngleChar(player);
       image += ".png";
