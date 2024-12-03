@@ -336,14 +336,17 @@ void handleSetup(String[] message) {
 
 void handleMap(String[] message) {
   map.grid = new char[map.gridDimensionX][map.gridDimensionY];
-  
-  for(int y_1 = 0; y_1 < map.gridDimensionY; y_1++) {
-    for(int x_1 = 0; x_1 < map.gridDimensionX; x_1++) {
-      int i = map.gridDimensionX * x_1 + y_1;
-      map.grid[y_1][x_1] = message[i].charAt(0);
+  System.out.println(message[0]);
+  for(int x = 0; x < map.gridDimensionX; x++) {
+    for(int y = 0; y < map.gridDimensionY; y++) {
+      int i = map.gridDimensionY * y + x;
+      map.grid[x][y] = message[0].charAt(i);
     }
   }
   lobbySetup2 = true;
+  
+  ArrayList<String> new_message = new ArrayList<>();
+  sendMessage('B', new_message);
 }
 
 void broadcastLobby() {
@@ -373,7 +376,7 @@ void broadcastLobby() {
 
 void handleAcknowledge(char c) {
   if(c == 'A') {
-    lobbySetup1 = true; 
+    lobbySetup1 = true;
   }
   else {
     lobbySetup2 = true; 
