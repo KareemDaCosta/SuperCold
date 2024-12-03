@@ -168,8 +168,6 @@ class Enemy {
         image += 'E';
       }
       else {
-        System.out.println(velocityX);
-        System.out.println(velocityY);
         image += movementLetter;
       }
       image += getAngleChar(player);
