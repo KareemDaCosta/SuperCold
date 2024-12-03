@@ -182,6 +182,9 @@ void mouseClicked() {
        setup_game_lobby(); 
     }
   }
+  if(intro.inSetup) {
+    return; 
+  }
   else {
      triggerShot(player, enemy); 
     // DELETE THIS LATER (only for testing)
@@ -275,25 +278,29 @@ void serialEvent(Serial myPort) {
      String recievedMessage = myPort.readStringUntil('\n').trim();
      System.out.println("Recieved message" + recievedMessage);
      String[] components = recievedMessage.split(": ");
-     String[] message = components[1].split(",");
+     String[] message;
      switch(components[0]) {
       case "P":
+        message = components[1].split(",");
         enemy.updatePosition(Float.parseFloat(message[0]), Float.parseFloat(message[1]));
         enemy.updateVelocity(Float.parseFloat(message[2]), Float.parseFloat(message[3]));
         enemy.updateCameraAngle(Float.parseFloat(message[4]));
         break;
       case "F":
+        message = components[1].split(",");
         enemy.fire();
         if(message[0] == "true") {
           triggerPlayerDeath();
         }
         break;
       case "S":
+        message = components[1].split(",");
         if(intro.inSetup && !isHost) {
           handleSetup(message);
         }
         break;
       case "M":
+        message = components[1].split(",");
         if(intro.inSetup && !isHost) {
           handleMap(message);
         }
