@@ -270,7 +270,6 @@ void sendMessage(char prefix, ArrayList<String> message) {
     }
   }
   myPort.write(prefix + ": " + formattedMessage + "\n");
-  System.out.println("Sent message: " + prefix + ": " + formattedMessage + "\n");
 }
 
 void serialEvent(Serial myPort) {
@@ -278,7 +277,6 @@ void serialEvent(Serial myPort) {
   if(myPort.available() > 0) {
     while(myPort.available() > 0) {
      String receivedMessage = myPort.readStringUntil('\n').trim();
-     System.out.println("Received message: " + receivedMessage);
      
      if(receivedMessage.charAt(0) == 'A') {
         lobbySetup1 = true; 
@@ -303,7 +301,8 @@ void serialEvent(Serial myPort) {
       case "F":
         message = components[1].split(",");
         enemy.fire();
-        if(message[0] == "true") {
+        System.out.println(message[0]);
+        if(message[0].equals("true")) {
           triggerPlayerDeath();
         }
         break;
