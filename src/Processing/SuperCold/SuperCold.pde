@@ -61,6 +61,8 @@ void draw() {
     intro.show_intro();
   }
   else if(intro.inSetup) {
+    System.out.println("lobbySetup1" + lobbySetup1);
+    System.out.println("lobbySetup2" + lobbySetup2);
      if(lobbySetup1 && lobbySetup2) {
         intro.inSetup = false;
      }
@@ -275,16 +277,28 @@ void serialEvent(Serial myPort) {
   try {
   if(myPort.available() > 0) {
     while(myPort.available() > 0) {
-     String recievedMessage = myPort.readStringUntil('\n').trim();
-     System.out.println("Recieved message" + recievedMessage);
-     String[] components = recievedMessage.split(": ");
+     String receivedMessage = myPort.readStringUntil('\n').trim();
+     System.out.println("Received message: " + receivedMessage);
+     
+     if(receivedMessage.charAt(0) == 'A') {
+        lobbySetup1 = true; 
+        continue;
+     }
+     if(receivedMessage.charAt(0) == 'B') {
+        lobbySetup2 = true; 
+        continue;
+     }
+     
+     String[] components = receivedMessage.split(": ");
      String[] message;
      switch(components[0]) {
       case "P":
         message = components[1].split(",");
-        enemy.updatePosition(Float.parseFloat(message[0]), Float.parseFloat(message[1]));
-        enemy.updateVelocity(Float.parseFloat(message[2]), Float.parseFloat(message[3]));
-        enemy.updateCameraAngle(Float.parseFloat(message[4]));
+        if(!intro.inIntro && !intro.inSetup) {
+          enemy.updatePosition(Float.parseFloat(message[0]), Float.parseFloat(message[1]));
+          enemy.updateVelocity(Float.parseFloat(message[2]), Float.parseFloat(message[3]));
+          enemy.updateCameraAngle(Float.parseFloat(message[4]));
+        }
         break;
       case "F":
         message = components[1].split(",");
@@ -304,11 +318,6 @@ void serialEvent(Serial myPort) {
         if(intro.inSetup && !isHost) {
           handleMap(message);
         }
-      case "A":
-        handleAcknowledge('A');
-        break;
-      case "B":
-        handleAcknowledge('B');
         break;
      }
     }
@@ -383,13 +392,4 @@ void broadcastLobby() {
   map.add(map_str);
   sendMessage('S', message);
   sendMessage('M', map);
-}
-
-void handleAcknowledge(char c) {
-  if(c == 'A') {
-    lobbySetup1 = true;
-  }
-  else {
-    lobbySetup2 = true; 
-  }
 }

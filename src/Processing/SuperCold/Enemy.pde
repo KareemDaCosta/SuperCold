@@ -164,7 +164,9 @@ class Enemy {
       if(firing) {
          image += 'F'; 
       }
-      else if(velocityX != 0 || velocityY != 0) {
+      else if(((velocityX > 0 && velocityX - 0.2 < 0) || (velocityX < 0 && velocityX + 0.2 > 0)) && ((velocityY > 0 && velocityY - 0.2 < 0) || (velocityY < 0 && velocityY + 0.2 > 0))) {
+        System.out.println(velocityX);
+        System.out.println(velocityY);
         image += movementLetter;
       }
       else {
