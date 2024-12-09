@@ -53,6 +53,7 @@ boolean dPressed;
 boolean qPressed;
 boolean ePressed;
 
+
 void setup() {
   size(1280, 720);
   frameRate(30);
@@ -303,23 +304,6 @@ void updatePressedStatus(int jy1, int jx1, int jx2, int bs) {
 }
 
 void serialEvent(Serial myPort) {
-  if (myPort.available() > 0) {
-    val = myPort.readStringUntil('\n');
-    println(val);
-    if (val != null) {
-      val = trim(val);
-      println(val);
-      String[] values = split(val, ',');
-      if (values.length == 5) {
-        joyStickY1 = int(values[0]);
-        joyStickX1 = int(values[1]);
-        joyStickY2 = int(values[2]);
-        joyStickX2 = int(values[3]);
-        buttonState = int(values[4]);
-        updatePressedStatus(joyStickY1, joyStickX1, joyStickX2, buttonState);
-      }
-    }
-  }
   try {
   if(myPort.available() > 0) {
     while(myPort.available() > 0) {
@@ -337,6 +321,16 @@ void serialEvent(Serial myPort) {
      String[] components = receivedMessage.split(": ");
      String[] message;
      switch(components[0]) {
+      case "C":
+        message = components[1].split(",");
+        if (message.length == 5) {
+          joyStickY1 = int(message[0]);
+          joyStickX1 = int(message[1]);
+          joyStickY2 = int(message[2]);
+          joyStickX2 = int(message[3]);
+          buttonState = int(message[4]);
+          updatePressedStatus(joyStickY1, joyStickX1, joyStickX2, buttonState);
+      }
       case "P":
         message = components[1].split(",");
         if(!intro.inIntro && !intro.inSetup) {
