@@ -39,6 +39,19 @@ int sceneH = 720;
 int playerScore;
 int enemyScore;
 
+String val; // data from port
+int joyStickX1;
+int joyStickY1;
+int joyStickX2;
+int joyStickY2;
+int buttonState;
+
+boolean wPressed;
+boolean aPressed;
+boolean sPressed;
+boolean dPressed;
+boolean qPressed;
+boolean ePressed;
 
 void setup() {
   size(1280, 720);
@@ -57,10 +70,11 @@ void setup() {
 }
 
 void draw() {
+  
   if(intro.inIntro) {
     intro.show_intro();
   }
-  else if(intro.inSetup) {
+  else if (intro.inSetup) {
      if(lobbySetup1 && lobbySetup2) {
         intro.inSetup = false;
      }
@@ -88,7 +102,7 @@ void draw() {
     enemy.updateVariables();
     enemy.updateTexture(player);
     camera_draw(player, enemy);
-    //draw_minimap(walls, map, false);
+    draw_minimap(walls, map, false);
     draw_crosshair();
     drawScore();
   }
@@ -226,7 +240,7 @@ void handlePlayerDeath() {
     if(playerDyingCountdown == 0) {
       playerDyingStage++;
       if(playerDyingStage == 2) {
-        playerDyingCountdown = 60;
+        playerDyingCountdown = 30;
         enemyScore++; 
         fill(255, 0, 0);
         rect(0, 0, width, height);
@@ -264,7 +278,48 @@ void sendMessage(char prefix, ArrayList<String> message) {
   myPort.write(prefix + ": " + formattedMessage + "\n");
 }
 
+void updatePressedStatus(int jy1, int jx1, int jx2, int bs) {
+  // handle w and s
+  if (jy1 > 2250) wPressed = true;
+  if (jy1 < 1350) sPressed = true;
+  if (jy1 < 2250 && jy1 > 1350) wPressed = false;
+  if (jy1 < 2250 && jy1 > 1350) sPressed = false;
+  
+  // handle a and d
+  if (jx1 < 1350) aPressed = true;
+  if (jx1 > 2250) dPressed = true;
+  if (jx1 < 2250 && jx1 > 1350) aPressed = false;
+  if (jx1 < 2250 && jx1 > 1350) dPressed = false;
+  
+  // handle q and e
+  if (jx2 < 1350) qPressed = true;
+  if (jx2 > 2250) ePressed = true;
+  if (jx2 > 1350 && jx2 < 2250) qPressed = false;
+  if (jx2 > 1350 && jx2 < 2250) ePressed = false;
+  
+  if (bs == 0) {
+    mouseClicked();
+  }
+}
+
 void serialEvent(Serial myPort) {
+  if (myPort.available() > 0) {
+    val = myPort.readStringUntil('\n');
+    println(val);
+    if (val != null) {
+      val = trim(val);
+      println(val);
+      String[] values = split(val, ',');
+      if (values.length == 5) {
+        joyStickY1 = int(values[0]);
+        joyStickX1 = int(values[1]);
+        joyStickY2 = int(values[2]);
+        joyStickX2 = int(values[3]);
+        buttonState = int(values[4]);
+        updatePressedStatus(joyStickY1, joyStickX1, joyStickX2, buttonState);
+      }
+    }
+  }
   try {
   if(myPort.available() > 0) {
     while(myPort.available() > 0) {
