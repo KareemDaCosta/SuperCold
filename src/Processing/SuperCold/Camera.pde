@@ -26,12 +26,6 @@ class Camera {
 }
 
 // Input
-boolean wPressed;
-boolean aPressed;
-boolean sPressed;
-boolean dPressed;
-boolean qPressed;
-boolean ePressed;
 
 // Render Parameters
 PImage buffer;
