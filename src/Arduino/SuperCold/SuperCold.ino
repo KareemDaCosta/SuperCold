@@ -7,7 +7,7 @@ int xyzPins[] = {36, 37, 38};   // y, x, z(switch) pins first one
 int xyzPins2[] = {39, 32, 33}; // y, x, z (switch) pins second one
 
 unsigned long previousMillis = 0;
-const long interval = 33; // 30 times per second, 1000ms/30
+const long interval = 66;
 
 void setup() {
   Serial.begin(9600);
