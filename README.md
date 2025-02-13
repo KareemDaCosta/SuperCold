@@ -3,8 +3,7 @@
 # About
 
 SuperCold is a 1 vs.1 first person shooter game, designed to work in Processing with an
-LILYGO TTGO ESP32 board, two joysticks, and a button. This was designed for COMS3930 Creative Embedded Systems,
-a class at Barnard College/Columbia University.
+LILYGO TTGO ESP32 board.
 
 Blog Post Link: https://medium.com/@kd2688/super-cold-25c6b1b90f1c
 
