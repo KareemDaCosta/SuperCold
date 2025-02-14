@@ -27,7 +27,7 @@ the button to ensure that the components are working.
 Once this code is uploaded, close the Arduino IDE, and open Processing. Download the files in src/Processing and open them in Processing.
 After doing so, start the game. At this point in time, make sure that you have at least one other person with the code running.
 
-You can also use WASD for movement, Q and E for left and right turning, and clicking to simulate the button. Have fun!
+You can use WASD for movement, Q and E for left and right turning, and clicking to fire the gun. Have fun!
 
 # Demonstration!
 
